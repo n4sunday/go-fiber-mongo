@@ -8,6 +8,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func GetEmployee(c *fiber.Ctx) error {
+	db := database.DB
+	collection := db.Db.Collection("employees")
+
+	idParam := c.Params("id")
+	employeeID, err := primitive.ObjectIDFromHex(idParam)
+
+	if err != nil {
+		return c.SendStatus(400)
+	}
+	var result Employee
+	collection.FindOne(c.Context(), bson.M{"_id": employeeID}).Decode(&result)
+	return c.JSON(result)
+}
+
 func GetAllEmployee(c *fiber.Ctx) error {
 	db := database.DB
 	collection := db.Db.Collection("employees")

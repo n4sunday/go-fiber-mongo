@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/n4sunday/go-fiber-mongo/database"
 	"github.com/n4sunday/go-fiber-mongo/routes"
 )
@@ -19,8 +20,9 @@ func main() {
 	}
 
 	app := fiber.New()
-	routes.SetupRoute(app)
 	app.Use(cors.New())
+	app.Use(logger.New())
+	routes.SetupRoute(app)
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON("Hello Go Fiber MongoDB 🚀")
