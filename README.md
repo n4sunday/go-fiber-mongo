@@ -2,7 +2,7 @@
 
 🌐 https://github.com/gofiber/fiber#readme
 
-## Basic Server
+## 🚀 Basic Server
 
 ```go
 package main
@@ -21,7 +21,7 @@ func main() {
 
 ```
 
-## Setup Project
+## 🚀 Setup Project
 
 ```sh
 go mod init go-fiber-mongo
@@ -30,7 +30,7 @@ go get go.mongodb.org/mongo-driver/mongo
 go get github.com/joho/godotenv
 ```
 
-## Mongo DB
+## 🚀 MongoDB
 
 📄 docker-compose.yml
 
@@ -48,4 +48,30 @@ services:
       MONGO_INITDB_DATABASE: sundaydb
     ports:
       - 27017:27017
+```
+
+## 🚀 Live Reload for Go
+
+### Installation
+🌐 https://github.com/cosmtrek/air
+```sh
+go get -u github.com/cosmtrek/air
+```
+
+```sh
+# binary will be $(go env GOPATH)/bin/air
+curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+
+# or install it into ./bin/
+curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s
+
+air -v
+```
+You can initialize the .air.toml configuration file to the current directory with the default settings running the following command.
+```sh
+air init
+```
+After this you can just run the air command without additional arguments and it will use the .air.toml file for configuration.
+```sh
+air
 ```
