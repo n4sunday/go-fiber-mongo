@@ -3,6 +3,7 @@ package employee
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/n4sunday/go-fiber-mongo/database"
+	response "github.com/n4sunday/go-fiber-mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -109,7 +110,7 @@ func UpdateEmployee(c *fiber.Ctx) error {
 
 	// return the updated employee
 	employee.ID = idParam
-	return c.Status(200).JSON(employee)
+	return c.Status(200).JSON(response.UpdateSuccess())
 }
 
 func DeleteEmployee(c *fiber.Ctx) error {
@@ -122,7 +123,7 @@ func DeleteEmployee(c *fiber.Ctx) error {
 
 	// the provided ID might be invalid ObjectID
 	if err != nil {
-		return c.SendStatus(400)
+		return c.Status(400).JSON(response.ErrorInvalidID())
 	}
 
 	// find and delete the employee with the given ID
@@ -130,7 +131,7 @@ func DeleteEmployee(c *fiber.Ctx) error {
 	result, err := collection.DeleteOne(c.Context(), &query)
 
 	if err != nil {
-		return c.SendStatus(500)
+		return c.Status(500).JSON(response.ErrorDeletion())
 	}
 
 	// the employee might not exist
@@ -138,6 +139,5 @@ func DeleteEmployee(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 
-	// the record was deleted
-	return c.SendStatus(204)
+	return c.Status(200).JSON(response.DeleteSuccess())
 }
