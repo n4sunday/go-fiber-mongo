@@ -1,12 +1,16 @@
 package employee
 
 import (
+	"math"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/n4sunday/go-fiber-mongo/database"
 	response "github.com/n4sunday/go-fiber-mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func GetEmployee(c *fiber.Ctx) error {
@@ -17,8 +21,9 @@ func GetEmployee(c *fiber.Ctx) error {
 	employeeID, err := primitive.ObjectIDFromHex(idParam)
 
 	if err != nil {
-		return c.SendStatus(400)
+		return c.Status(400).JSON(response.ErrorInvalidID())
 	}
+
 	var result Employee
 	collection.FindOne(c.Context(), bson.M{"_id": employeeID}).Decode(&result)
 	return c.JSON(result)
@@ -27,19 +32,43 @@ func GetEmployee(c *fiber.Ctx) error {
 func GetAllEmployee(c *fiber.Ctx) error {
 	db := database.DB
 	collection := db.Db.Collection("employees")
+	ctx := c.Context()
 
 	query := bson.D{{}}
-	cursor, err := collection.Find(c.Context(), query)
+	findOptions := options.Find()
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	limitVal, _ := strconv.Atoi(c.Query("limit", "10"))
+	var limit int64 = int64(limitVal)
+
+	total, _ := collection.CountDocuments(ctx, query)
+
+	findOptions.SetSkip((int64(page) - 1) * limit)
+	findOptions.SetLimit(limit)
+
+	cursor, err := collection.Find(ctx, query, findOptions)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
 
 	var employees []Employee = make([]Employee, 0)
 
-	if err := cursor.All(c.Context(), &employees); err != nil {
+	if err := cursor.All(ctx, &employees); err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	return c.JSON(employees)
+
+	last := math.Ceil(float64(total / limit))
+	if last < 1 && total > 0 {
+		last = 1
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"data":      employees,
+		"total":     total,
+		"page":      page,
+		"last_page": last,
+		"limit":     limit,
+	})
 }
 
 func CreateEmployee(c *fiber.Ctx) error {
@@ -79,7 +108,7 @@ func UpdateEmployee(c *fiber.Ctx) error {
 
 	// the provided ID might be invalid ObjectID
 	if err != nil {
-		return c.SendStatus(400)
+		return c.Status(400).JSON(response.ErrorInvalidID())
 	}
 
 	employee := new(Employee)

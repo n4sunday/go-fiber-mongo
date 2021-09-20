@@ -2,6 +2,12 @@ package response
 
 import "github.com/gofiber/fiber/v2"
 
+func ErrorInvalidID() *fiber.Map {
+	return &fiber.Map{
+		"message": "invalid id",
+	}
+}
+
 // UPDATE
 func UpdateSuccess() *fiber.Map {
 	return &fiber.Map{
@@ -13,12 +19,6 @@ func UpdateSuccess() *fiber.Map {
 func DeleteSuccess() *fiber.Map {
 	return &fiber.Map{
 		"message": "delete success",
-	}
-}
-
-func ErrorInvalidID() *fiber.Map {
-	return &fiber.Map{
-		"message": "invalid id",
 	}
 }
 
