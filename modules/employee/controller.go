@@ -3,6 +3,7 @@ package employee
 import (
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/n4sunday/go-fiber-mongo/database"
@@ -34,6 +35,8 @@ func GetAllEmployee(c *fiber.Ctx) error {
 	collection := db.Db.Collection("employees")
 	ctx := c.Context()
 
+	var employees []Employee = make([]Employee, 0)
+
 	query := bson.D{{}}
 	findOptions := options.Find()
 
@@ -45,13 +48,12 @@ func GetAllEmployee(c *fiber.Ctx) error {
 
 	findOptions.SetSkip((int64(page) - 1) * limit)
 	findOptions.SetLimit(limit)
+	findOptions.SetSort(bson.D{{"age", -1}})
 
 	cursor, err := collection.Find(ctx, query, findOptions)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-
-	var employees []Employee = make([]Employee, 0)
 
 	if err := cursor.All(ctx, &employees); err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -82,6 +84,8 @@ func CreateEmployee(c *fiber.Ctx) error {
 	}
 	// force MongoDB to always set its own generated ObjectIDs
 	employee.ID = ""
+	employee.CreatedAt = time.Now()
+	employee.UpdatedAt = time.Now()
 	insertionResult, err := collection.InsertOne(c.Context(), employee)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -125,6 +129,7 @@ func UpdateEmployee(c *fiber.Ctx) error {
 				{Key: "name", Value: employee.Name},
 				{Key: "age", Value: employee.Age},
 				{Key: "salary", Value: employee.Salary},
+				{Key: "updated_at", Value: time.Now()},
 			},
 		},
 	}

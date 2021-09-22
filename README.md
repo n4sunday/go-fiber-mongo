@@ -53,7 +53,9 @@ services:
 ## 🚀 Live Reload for Go
 
 ### Installation
+
 🌐 https://github.com/cosmtrek/air
+
 ```sh
 go get -u github.com/cosmtrek/air
 ```
@@ -67,11 +69,31 @@ curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh
 
 air -v
 ```
+
 You can initialize the .air.toml configuration file to the current directory with the default settings running the following command.
+
 ```sh
 air init
 ```
+
 After this you can just run the air command without additional arguments and it will use the .air.toml file for configuration.
+
 ```sh
 air
+```
+
+## 🚀 Use MongoDB
+
+#### 🔥 Query Select Field
+use `Decode` 
+```go
+var results []models.EmployeeX
+
+cursor, err := collection.Find(ctx, filter, findOptions)
+
+for cursor.Next(ctx) {
+    var result models.EmployeeX
+    cursor.Decode(&result)
+    results = append(results, result)
+}
 ```
