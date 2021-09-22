@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/n4sunday/go-fiber-mongo/database"
-	response "github.com/n4sunday/go-fiber-mongo/utils"
+	"github.com/n4sunday/go-fiber-mongo/utils/response"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
