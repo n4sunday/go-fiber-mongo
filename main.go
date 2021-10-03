@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+
 	"github.com/n4sunday/go-fiber-mongo/database"
 	"github.com/n4sunday/go-fiber-mongo/routes"
 )

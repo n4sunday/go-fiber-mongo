@@ -37,8 +37,21 @@ func GetAllEmployee(c *fiber.Ctx) error {
 
 	var employees []Employee = make([]Employee, 0)
 
-	query := bson.D{{}}
+	query := bson.M{}
 	findOptions := options.Find()
+
+	query = bson.M{
+		"$or": []bson.M{
+			{
+				"name": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: "R2",
+						Options: "i",
+					},
+				},
+			},
+		},
+	}
 
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limitVal, _ := strconv.Atoi(c.Query("limit", "10"))
@@ -51,6 +64,7 @@ func GetAllEmployee(c *fiber.Ctx) error {
 	findOptions.SetSort(bson.D{{"age", -1}})
 
 	cursor, err := collection.Find(ctx, query, findOptions)
+
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -115,6 +129,11 @@ func UpdateEmployee(c *fiber.Ctx) error {
 		return c.Status(400).JSON(response.ErrorInvalidID())
 	}
 
+	positionID, err := primitive.ObjectIDFromHex(idParam)
+	if err != nil {
+		return c.Status(400).JSON(response.ErrorInvalidID())
+	}
+
 	employee := new(Employee)
 	// Parse body into struct
 	if err := c.BodyParser(employee); err != nil {
@@ -129,6 +148,7 @@ func UpdateEmployee(c *fiber.Ctx) error {
 				{Key: "name", Value: employee.Name},
 				{Key: "age", Value: employee.Age},
 				{Key: "salary", Value: employee.Salary},
+				{Key: "position", Value: positionID},
 				{Key: "updated_at", Value: time.Now()},
 			},
 		},

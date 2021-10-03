@@ -1,6 +1,6 @@
 package database
 
-import(
+import (
 	"context"
 	"time"
 
@@ -9,23 +9,23 @@ import(
 )
 
 type MongoInstance struct {
-	Client * mongo.Client
-	Db * mongo.Database
+	Client *mongo.Client
+	Db     *mongo.Database
 }
 
 var DB MongoInstance
 
-const dbName = "sundaydb"
-const mongoURI = "mongodb://root:123456@localhost:27017/sundaydb?authSource=admin"
+const dbName = "mydb"
+const mongoURI = "mongodb://root:123456@localhost:27017/mydb?authSource=admin"
 
 func Connect() error {
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	err = client.Connect(ctx)
-	db:= client.Database(dbName)
+	db := client.Database(dbName)
 
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func Connect() error {
 
 	DB = MongoInstance{
 		Client: client,
-			Db: db,
+		Db:     db,
 	}
 
 	return nil
